@@ -1,0 +1,278 @@
+//maby some usefull compass mixins... more infos: http://wiki.thorbenjaworr.de/index.php?title=SASS_/_SCSS
+
+
+//usage: @include blur(5px); ---------------------------------------------------
+@mixin blur($px)
+{
+    -webkit-filter: blur($px);
+    -moz-filter: blur($px);
+    -o-filter: blur($px);
+    -ms-filter: blur($px);
+    filter: url('/media/blur.svg#blur');
+    filter: blur($px);
+}
+
+//usage: @include clickable(); -------------------------------------------------
+@mixin clickable()
+{
+    a[href], input[type='submit'], input[type='image'], label[for], select, button, .pointer 
+    {
+        cursor: pointer;
+    }
+}
+
+//usage: @include font-size(16px); ---------------------------------------------
+@function calculateRem($px)
+{
+    $remSize: $px / 16px;
+    @return $remSize * 1rem;
+}
+
+@mixin font-size($px)
+{
+    font-size: $px;
+    font-size: calculateRem($px);
+}
+
+
+//usage: @include drop-shadow(5px, 5px, 5px, rgba(0, 0, 0, 0.3)); --------------
+@mixin drop-shadow($left, $top, $blur, $rgba)
+{
+    -ms-filter: "progid:DXImageTransform.Microsoft.DropShadow(Strength=4, Direction=135, Color='#000000')";
+    filter: progid:DXImageTransform.Microsoft.DropShadow(Strength=4, Direction=135, Color='#000000');
+    -webkit-filter: drop-shadow($left $top $blur $rgba);
+    filter: drop-shadow($left $top $blur $rgba);
+}
+
+
+//usage: @include center-vertical(); -------------------------------------------
+@mixin center-vertical()
+{
+    position: relative;
+    top: 50%;
+
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+//usage: @include resize-sprite($all-parts-sprites, play, 60); -----------------
+@mixin resize-sprite($map, $sprite, $percent)
+{
+    $spritePath:    sprite-path($map);
+    $spriteWidth:   image-width($spritePath);
+    $spriteHeight:  image-height($spritePath);
+    $width: image-width(sprite-file($map, $sprite));
+    $height: image-height(sprite-file($map, $sprite));
+
+    @include background-size(ceil($spriteWidth * ($percent/100)) ceil($spriteHeight * ($percent/100)));
+    background-image: sprite-url($map);
+    width: ceil($width*($percent/100));
+    height: ceil($height*($percent/100));
+    background-position: 0 floor(nth(sprite-position($map, $sprite), 2)  * ($percent/100) );
+}
+
+
+//usage: -----------------------------------------------------------------------
+/*.class
+{
+    background-color: red;
+
+    @include bp(767px)
+   {
+        background-color: green;
+    }
+}*/
+@mixin bp($maxPx)
+{
+    @media only screen and (max-width: $maxPx)
+        {
+        @content;
+    }
+}
+
+
+//usage: @include grayscale(100%); ---------------------------------------------
+@mixin grayscale($percentage)
+{
+    filter: gray; /* IE6-9 */
+    -o-filter: grayscale($percentage);
+    -ms-filter: grayscale($percentage);
+    -moz-filter: grayscale($percentage);
+    -webkit-filter: grayscale($percentage);
+    filter: grayscale($percentage);
+}
+
+
+//usage: @include bgnoise(#333333); --------------------------------------------
+@mixin bgnoise($backgroundcolor)
+{
+    background-image: url(data:image/png;base64,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);
+    background-color: $backgroundcolor;
+}
+
+
+//usage: @include selection(yellow, black); ------------------------------------
+@mixin selection($color, $bgColor)
+{
+    ::selection
+    {
+        color: $color;
+        background-color: $bgColor;
+    }
+
+    ::-moz-selection
+    {
+        color: $color;
+        background-color: $bgColor;
+    }
+}
+
+//usage: @include size(300px); / @include size(300px, 400px); ------------------
+@mixin size($width, $height: $width)
+{
+    width: $width;
+    height: $height;
+}
+
+
+//usage: @include circle(); ----------------------------------------------------
+@mixin circle
+{
+    @include border-radius(100%);
+}
+
+
+//usage: @include remove-dotted(); ---------------------------------------------
+@mixin remove-dotted
+{
+    a:hover, a:active, a:focus, a:link, a:visited
+    {
+        outline: 0;
+        outline: 0 !important;
+        outline-style:none;
+    }
+}
+
+
+//usage: @include placeholder-color(#000000) -----------------------------------
+@mixin placeholder-color($color)
+{
+    ::-webkit-input-placeholder
+    { 
+        color:    $color;
+    }
+    
+    :-moz-placeholder
+    {
+        color:    $color;
+        opacity:  1;
+    }
+    
+    ::-moz-placeholder
+    {
+        color:    $color;
+        opacity:  1;
+    }
+    
+    :-ms-input-placeholder
+    { 
+        color:    $color;
+    }
+}
+
+
+//flip vertical
+//usage: @include flip-v(); ----------------------------------------------------
+@mixin flip-v()
+{
+    -moz-transform: scale(-1,-1);
+    -o-transform: scale(-1,-1);
+    -webkit-transform: scale(-1,-1);
+    transform: scale(-1,-1);
+    filter: FlipV;
+    -ms-filter: "FlipV";
+}
+
+//usage: @include ghost-button(“Trebuchet”, 12px, #ffffff, 5px, #34dec6, 4px, 300ms, #000000 );
+@mixin ghost-button($font, $font-size, $font-color, $border-size, $border-color, $padding, $transition-speed, $hover-color)
+{
+    display:inline-block;
+    text-decoration:none;
+    text-transform:uppercase;
+    font-family: $font;
+    font-size: $font-size;
+    color:$font-color;
+    border:$border-size solid $border-color;
+    padding:$padding;
+    
+    @include transition(color $transition-speed);
+    @include transition(background $transition-speed);
+    
+    &:hover
+    {
+        background:$border-color;
+        color:$hover-color;
+    }
+}
+
+
+//usage: -----------------------------------------------------------------------
+/*@include keyframes(fadeInText)
+{
+    0%
+    {
+        @include opacity(0);
+        @include transform(scale(2));
+    }
+    100%
+    {
+        @include opacity(1);
+        @include transform(scale(1));
+    }
+}
+
+.animatedItem
+{
+    @include animation('fadeInText .5s linear both');
+}*/
+@mixin animation($animate)
+{
+    $max: length($animate);
+    $animations: '';
+
+    @for $i from 1 through $max
+    {
+        $animations: #{$animations + nth($animate, $i)};
+
+        @if $i < $max
+        {
+            $animations: #{$animations + ", "};
+        }
+    }
+    -webkit-animation: $animations;
+    -moz-animation:    $animations;
+    -o-animation:      $animations;
+    animation:         $animations;
+}
+
+@mixin keyframes($animationName)
+{
+    @-webkit-keyframes #{$animationName}
+    {
+        @content;
+    }
+    @-moz-keyframes #{$animationName}
+    {
+        @content;
+    }
+    @-o-keyframes #{$animationName}
+    {
+        @content;
+    }
+    @keyframes #{$animationName}
+    {
+        @content;
+    }
+}
